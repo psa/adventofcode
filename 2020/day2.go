@@ -74,12 +74,40 @@ func scanPasswords(passwords []passwordData) int {
 	return correct
 }
 
+func scanPasswordsNewPolicy(passwords []passwordData) int {
+	var correct int
+	var first bool
+	var second bool
+	for _, entry := range passwords {
+		// Re-base to zero from one so it lines up with arrays being zero based
+		min := entry.Min - 1
+		max := entry.Max - 1
+		if min >= len(entry.Password) {
+			first = false
+		} else {
+			first = strings.Contains(string(entry.Password[min]), entry.Character)
+		}
+		if max >= len(entry.Password) {
+			second = false
+		} else {
+			second = strings.Contains(string(entry.Password[max]), entry.Character)
+		}
+		if (first || second) && !(first && second) {
+			correct++
+		}
+	}
+	return correct
+}
+
 func main() {
 	var passwordLines []string
 	var fileName string
 	var passwords []passwordData
+	var newPolicy bool
+	var result int
 
 	flag.StringVar(&fileName, "f", "input/2", "Input file")
+	flag.BoolVar(&newPolicy, "n", true, "Use New Policy")
 	flag.Parse()
 
 	passwordLines = readPasswords(fileName)
@@ -93,6 +121,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	result := scanPasswords(passwords)
+	if newPolicy {
+		result = scanPasswordsNewPolicy(passwords)
+	} else {
+		result = scanPasswords(passwords)
+	}
 	fmt.Println(result)
 }

@@ -59,3 +59,50 @@ func TestScanPasswords(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestScanPasswordsNewPolicy(t *testing.T) {
+	var data = []passwordData{
+		passwordData{ // Valid, position 1 contains a and position 3 does not
+			Min:       1,
+			Max:       3,
+			Character: "a",
+			Password:  "abcde",
+		},
+		passwordData{ // Invalid, neither position 1 nor position 3 contains b
+			Min:       1,
+			Max:       3,
+			Character: "b",
+			Password:  "cdefg",
+		},
+		passwordData{ // Invalid, both position 2 and position 9 contain c.
+			Min:       2,
+			Max:       9,
+			Character: "c",
+			Password:  "ccccccccc",
+		},
+		passwordData{ // Invalid, neither position is in the password
+			Min:       2,
+			Max:       9,
+			Character: "c",
+			Password:  "c",
+		},
+		passwordData{ // Invalid, Min incorrect and Max outside
+			Min:       2,
+			Max:       9,
+			Character: "c",
+			Password:  "ddd",
+		},
+		passwordData{ // Valid, Min correct and Max outside
+			Min:       2,
+			Max:       9,
+			Character: "c",
+			Password:  "ccc",
+		},
+	}
+	result := scanPasswordsNewPolicy(data)
+
+	if result != 2 {
+		t.Log("Error, expect 1 correct result, got", result)
+		t.Fail()
+	}
+}
