@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -42,19 +43,100 @@ func readFile(filename string) ([]string, error) {
 	return lines, nil
 }
 
-func checkValidPassport(passport *Passport) {
-	if passport.birthYear != 0 &&
-		passport.issueYear != 0 &&
-		passport.expireYear != 0 &&
-		passport.height != "" &&
-		passport.hairColor != "" &&
-		passport.eyeColor != "" &&
-		passport.passportID != "" {
-		passport.valid = true
+func validBirthYear(year int) bool {
+	if year >= 1920 && year <= 2002 {
+		return true
 	}
+	return false
 }
 
-func parsePassport(passportFields []string) Passport {
+func validIssueYear(year int) bool {
+	if year >= 2010 && year <= 2020 {
+		return true
+	}
+	return false
+}
+
+func validExpirationYear(year int) bool {
+	if year >= 2020 && year <= 2030 {
+		return true
+	}
+	return false
+}
+
+func validHeight(height string) bool {
+	if len(height) < 4 {
+		return false
+	}
+	value, err := strconv.Atoi(height[:len(height)-2])
+	if err != nil {
+		// fmt.Fprintf(os.Stderr, "Failed to parse height: %s\n", err)
+		return false
+	}
+	unit := height[len(height)-2:]
+	if unit == "cm" {
+		if value >= 150 && value <= 193 {
+			return true
+		}
+	}
+	if unit == "in" {
+		if value >= 59 && value <= 76 {
+			return true
+		}
+	}
+	return false
+}
+
+func validHairColor(color string) bool {
+	valid := regexp.MustCompile(`^#[0-9a-f]{6}$`)
+	if valid.MatchString(color) {
+		return true
+	}
+	return false
+}
+
+func validEyeColor(color string) bool {
+	valid := regexp.MustCompile(`^(amb|blu|brn|gry|grn|hzl|oth)$`)
+	if valid.MatchString(color) {
+		return true
+	}
+	return false
+}
+
+func validPassportNumber(passport string) bool {
+	valid := regexp.MustCompile(`^[0-9]{9}$`)
+	if valid.MatchString(passport) {
+		return true
+	}
+	return false
+}
+
+func checkValidPassport(passport *Passport, strict bool) {
+	if strict {
+		if validBirthYear(passport.birthYear) &&
+			validIssueYear(passport.issueYear) &&
+			validExpirationYear(passport.expireYear) &&
+			validHeight(passport.height) &&
+			validHairColor(passport.hairColor) &&
+			validEyeColor(passport.eyeColor) &&
+			validPassportNumber(passport.passportID) {
+			passport.valid = true
+		}
+	} else {
+		if passport.birthYear != 0 &&
+			passport.issueYear != 0 &&
+			passport.expireYear != 0 &&
+			passport.height != "" &&
+			passport.hairColor != "" &&
+			passport.eyeColor != "" &&
+			passport.passportID != "" {
+			passport.valid = true
+		}
+	}
+
+}
+
+func parsePassport(passportFields []string, strict bool) Passport {
 	var passport Passport
 	for _, line := range passportFields {
 		fields := strings.Split(line, " ")
@@ -96,11 +178,11 @@ func parsePassport(passportFields []string) Passport {
 			}
 		}
 	}
-	checkValidPassport(&passport)
+	checkValidPassport(&passport, strict)
 	return passport
 }
 
-func parseInputData(inputData []string) []Passport {
+func parseInputData(inputData []string, strict bool) []Passport {
 	var passportFields []string
 	var passports []Passport
 
@@ -108,7 +190,7 @@ func parseInputData(inputData []string) []Passport {
 		if line != "" {
 			passportFields = append(passportFields, line)
 		} else {
-			passports = append(passports, parsePassport(passportFields))
+			passports = append(passports, parsePassport(passportFields, strict))
 			passportFields = []string{}
 		}
 	}
@@ -140,7 +222,7 @@ func main() {
 		die(err)
 	}
 
-	passports = parseInputData(inputData)
+	passports = parseInputData(inputData, part2)
 	result = countValidPassports(passports)
 
 	fmt.Println(result)
