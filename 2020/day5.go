@@ -101,7 +101,7 @@ func generateSeatIDs(inputData []string) []int {
 			continue
 		}
 		if len(line) != 10 {
-			fmt.Println("Error, short line:", line)
+			fmt.Fprintf(os.Stderr, "Error, short line: %v\n", line)
 			continue
 		}
 		row := line[:7]
@@ -120,6 +120,24 @@ func findHighestSeatID(seatIDs []int) (int, error) {
 	return highest[0], nil
 }
 
+func findMissingSeat(seatIDs []int) (int, error) {
+	var last int
+	if 0 == len(seatIDs) {
+		return 0, errors.New("Not passed any seat IDs")
+	}
+	for _, seat := range seatIDs {
+		if 0 == last {
+			last = seat
+			continue
+		}
+		if last != seat-1 {
+			return seat - 1, nil
+		}
+		last = seat
+	}
+	return 0, errors.New("No missing seat found")
+}
+
 func main() {
 	var fileName string
 	var part2 bool
@@ -134,10 +152,19 @@ func main() {
 	}
 
 	seatIDs := generateSeatIDs(inputData)
-
-	result, err := findHighestSeatID(seatIDs)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
+	if part2 {
+		sort.Ints(seatIDs)
+		seat, err := findMissingSeat(seatIDs)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to find a seat")
+			os.Exit(1)
+		}
+		fmt.Println(seat)
+	} else {
+		result, err := findHighestSeatID(seatIDs)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err)
+		}
+		fmt.Println(result)
 	}
-	fmt.Println(result)
 }

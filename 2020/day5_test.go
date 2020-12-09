@@ -237,5 +237,32 @@ func TestFindHighestSeatID(t *testing.T) {
 		t.Log("Expected an error, for an empty seat array but didn't get one")
 		t.Fail()
 	}
+}
+
+func TestFindMissingSeat(t *testing.T) {
+	var seat int
+	var err error
+
+	seat, err = findMissingSeat([]int{1, 2, 3, 5, 6, 7})
+	if err != nil {
+		t.Log("Unexpectedly got an error testing findMissingSeat", err)
+		t.Fail()
+	}
+	if seat != 4 {
+		t.Log("Expected seat 4, got", seat)
+		t.Fail()
+	}
+
+	seat, err = findMissingSeat([]int{1, 2})
+	if err == nil {
+		t.Log("Expected an error and got none testing no missing seat")
+		t.Fail()
+	}
+
+	seat, err = findMissingSeat([]int{})
+	if err == nil {
+		t.Log("Expected an error and testing empty input for findMissingSeat")
+		t.Fail()
+	}
 
 }
