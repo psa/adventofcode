@@ -41,25 +41,56 @@ func findAnswered(form []string) map[string]bool {
 	return questions
 }
 
-func countAnswered(inputData []string) int {
-	var customsForms []string
+func countAnswered(forms map[int][]string) int {
+	var count int
+	for _, form := range forms {
+		answeredQuestions := findAnswered(form)
+		count += len(answeredQuestions)
+	}
+	return count
+}
+
+func findEveryoneAnswered(form []string) map[string]bool {
+	questions := make(map[string]int)
+	everyoneAnswered := make(map[string]bool)
+	groupSize := len(form)
+	for _, line := range form {
+		for _, answer := range strings.Split(line, "") {
+			if answer != "" {
+				questions[answer]++
+			}
+		}
+	}
+
+	for question, count := range questions {
+		if count == groupSize {
+			everyoneAnswered[question] = true
+		}
+	}
+	return everyoneAnswered
+}
+
+func countEveryoneAnswered(forms map[int][]string) int {
+	var count int
+	for _, form := range forms {
+		answeredQuestions := findEveryoneAnswered(form)
+		count += len(answeredQuestions)
+	}
+	return count
+}
+
+func collectForms(inputData []string) map[int][]string {
+	customsForms := make(map[int][]string)
 	var count int
 
 	for _, line := range inputData {
 		if line != "" {
-			customsForms = append(customsForms, line)
+			customsForms[count] = append(customsForms[count], line)
 		} else {
-			answeredQuestions := findAnswered(customsForms)
-			count += len(answeredQuestions)
-			customsForms = []string{}
+			count++
 		}
 	}
-	// Clean up if no trailing newline, OK if there is as it's reset above on
-	// completion of a form line
-	answeredQuestions := findAnswered(customsForms)
-	count += len(answeredQuestions)
-
-	return count
+	return customsForms
 }
 
 func main() {
@@ -76,7 +107,12 @@ func main() {
 		die(err)
 	}
 
-	result = countAnswered(inputData)
+	forms := collectForms(inputData)
+	if part2 {
+		result = countEveryoneAnswered(forms)
+	} else {
+		result = countAnswered(forms)
+	}
 
 	fmt.Println(result)
 }

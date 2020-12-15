@@ -139,11 +139,10 @@ func TestFindAnswered(t *testing.T) {
 		t.Log("Error, failed to find the answered questions", response)
 		t.Fail()
 	}
-
 }
 
-func TestCountAnswered(t *testing.T) {
-	response := countAnswered([]string{
+func TestCollectForms(t *testing.T) {
+	response := collectForms([]string{
 		"abc",
 		"",
 		"a",
@@ -160,23 +159,59 @@ func TestCountAnswered(t *testing.T) {
 		"",
 		"b",
 	})
-	if response != 11 {
-		t.Log("Error, expected 11 answered questions, got", response)
+	if !reflect.DeepEqual(response, map[int][]string{
+		0: {"abc"},
+		1: {"a", "b", "c"},
+		2: {"ab", "ac"},
+		3: {"a", "a", "a", "a"},
+		4: {"b"},
+	}) {
+		t.Log("Error, got unexpected form collection", response)
 		t.Fail()
 	}
 
-	response = countAnswered([]string{
+	response = collectForms([]string{
 		"",
 		"",
 	})
-	if response != 0 {
-		t.Log("Error, expected 0 answered questions, got", response)
+	if !reflect.DeepEqual(response, map[int][]string{}) {
+		t.Log("Error, expected empty form collection, got", response)
 		t.Fail()
 	}
 
-	response = countAnswered([]string{})
-	if response != 0 {
-		t.Log("Error, expected 0 answered questions, got", response)
+	response = collectForms([]string{})
+	if !reflect.DeepEqual(response, map[int][]string{}) {
+		t.Log("Error, expected empty form collection, got", response)
+		t.Fail()
+	}
+}
+
+func TestCountAnswerd(t *testing.T) {
+	var response int
+	response = countAnswered(map[int][]string{
+		0: {"abc"},
+		1: {"a", "b", "c"},
+		2: {"ab", "ac"},
+		3: {"a", "a", "a", "a"},
+		4: {"b"},
+	})
+	if response != 11 {
+		t.Log("Expected 11, got", response)
+		t.Fail()
+	}
+}
+
+func TestCountEveryoneAnswerd(t *testing.T) {
+	var response int
+	response = countEveryoneAnswered(map[int][]string{
+		0: {"abc"},
+		1: {"a", "b", "c"},
+		2: {"ab", "ac"},
+		3: {"a", "a", "a", "a"},
+		4: {"b"},
+	})
+	if response != 6 {
+		t.Log("Expected 6, got", response)
 		t.Fail()
 	}
 }
