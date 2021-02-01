@@ -106,7 +106,7 @@ func main() {
 	var newPolicy bool
 	var result int
 
-	flag.StringVar(&fileName, "f", "input/2", "Input file")
+	flag.StringVar(&fileName, "f", "input", "Input file")
 	flag.BoolVar(&newPolicy, "n", true, "Use New Policy")
 	flag.Parse()
 

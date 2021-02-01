@@ -142,7 +142,7 @@ func main() {
 	var fileName string
 	var part2 bool
 
-	flag.StringVar(&fileName, "f", "input/5", "Input file")
+	flag.StringVar(&fileName, "f", "input", "Input file")
 	flag.BoolVar(&part2, "2", false, "Compute part 2 of the exercise")
 	flag.Parse()
 

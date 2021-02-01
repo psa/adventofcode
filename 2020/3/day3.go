@@ -93,7 +93,7 @@ func main() {
 	var length int
 	var new bool
 
-	flag.StringVar(&fileName, "f", "input/3", "Input file")
+	flag.StringVar(&fileName, "f", "input", "Input file")
 	flag.IntVar(&down, "d", 1, "Points to travel down")
 	flag.IntVar(&right, "r", 3, "Points to travel right")
 	flag.BoolVar(&new, "n", true, "Compute the new (part 2) problem")
