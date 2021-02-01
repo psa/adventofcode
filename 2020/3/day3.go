@@ -91,12 +91,12 @@ func main() {
 	var right int
 	var trees = make(map[int][]int)
 	var length int
-	var new bool
+	var part2 bool
 
 	flag.StringVar(&fileName, "f", "input", "Input file")
 	flag.IntVar(&down, "d", 1, "Points to travel down")
 	flag.IntVar(&right, "r", 3, "Points to travel right")
-	flag.BoolVar(&new, "n", true, "Compute the new (part 2) problem")
+	flag.BoolVar(&part2, "2", false, "Compute part 2 of the exercise")
 	flag.Parse()
 
 	treeLines = readTrees(fileName)
@@ -110,7 +110,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if new {
+	if part2 {
 		result = 1
 		result *= scanTrees(length, trees, 1, 1)
 		result *= scanTrees(length, trees, 3, 1)

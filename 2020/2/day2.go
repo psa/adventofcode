@@ -103,11 +103,11 @@ func main() {
 	var passwordLines []string
 	var fileName string
 	var passwords []passwordData
-	var newPolicy bool
+	var part2 bool
 	var result int
 
 	flag.StringVar(&fileName, "f", "input", "Input file")
-	flag.BoolVar(&newPolicy, "n", false, "Use New Policy")
+	flag.BoolVar(&part2, "2", false, "Compute part 2 of the exercise")
 	flag.Parse()
 
 	passwordLines = readPasswords(fileName)
@@ -121,7 +121,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if newPolicy {
+	if part2 {
 		result = scanPasswordsNewPolicy(passwords)
 	} else {
 		result = scanPasswords(passwords)
