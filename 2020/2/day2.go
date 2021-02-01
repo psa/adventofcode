@@ -107,7 +107,7 @@ func main() {
 	var result int
 
 	flag.StringVar(&fileName, "f", "input", "Input file")
-	flag.BoolVar(&newPolicy, "n", true, "Use New Policy")
+	flag.BoolVar(&newPolicy, "n", false, "Use New Policy")
 	flag.Parse()
 
 	passwordLines = readPasswords(fileName)
