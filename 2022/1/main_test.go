@@ -168,3 +168,18 @@ func TestCalculateLoadsErrors(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestFindTopThreeTotal(t *testing.T) {
+	data := []int{0, 2, 6, 3, 4}
+	var result int
+	var err error
+	result, err = findTopThreeTotal(data)
+	if nil != err {
+		t.Log("Unexpected error:", err)
+		t.Fail()
+	}
+	if result != 13 {
+		t.Log("Expected 13, got:", result)
+		t.Fail()
+	}
+}

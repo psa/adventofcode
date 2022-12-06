@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -28,16 +29,6 @@ func readFile(filename string) ([]string, error) {
 	}
 
 	return lines, nil
-}
-
-func findHeaviestLoad(food []int) int {
-	heaviest := 0
-	for _, load := range food {
-		if load > heaviest {
-			heaviest = load
-		}
-	}
-	return heaviest
 }
 
 func calculateLoads(food []string) ([]int, error) {
@@ -63,6 +54,29 @@ func calculateLoads(food []string) ([]int, error) {
 	return loads, nil
 }
 
+func findHeaviestLoad(food []int) int {
+	heaviest := 0
+	for _, load := range food {
+		if load > heaviest {
+			heaviest = load
+		}
+	}
+	return heaviest
+}
+
+func findTopThreeTotal(food []int) (int, error) {
+	total := 0
+	sort.Ints(food)
+	if len(food) < 3 {
+		return -1, errors.New("Not enough elves, need minimum of 3")
+	}
+	lastThree := food[len(food)-3:]
+	for _, i := range lastThree {
+		total += i
+	}
+	return total, nil
+}
+
 func main() {
 	var fileName string
 	var part2 bool
@@ -85,8 +99,10 @@ func main() {
 	if !part2 {
 		result = findHeaviestLoad(loads)
 	} else {
-		result = findHeaviestLoad(loads)
+		result, err = findTopThreeTotal(loads)
+		if nil != err {
+			die(err)
+		}
 	}
-
 	fmt.Println(result)
 }
